@@ -2,7 +2,7 @@
 🐣
 ## はじめかた
 ### GitHubの設定をする
-1. [こちら]<(https://desktop.github.com/)>のリンクからインストールして自分のGitHubアカウントと連携する。
+1. [こちら](<https://desktop.github.com/>)のリンクからインストールして自分のGitHubアカウントと連携する。
 2. 次に`File`→`clone repository`から`classroom-reservation-system`をクローンする。
 3. GitHubのプロジェクト管理やチーム開発の仕方は主に[チーム開発 GitHub入門（GitHub Desktop）](<https://zenn.dev/iput_app/articles/841f47a0cf104a>)これに沿って行う。
 ### VScodeをインストールしてJAVAの環境を構築する
