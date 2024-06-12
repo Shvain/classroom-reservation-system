@@ -27,6 +27,11 @@
  - バグや思った通りの仕様になっているかを確認。
 2. 確認した内容をシステムテスト仕様書に記述する。
 
+## プロトタイプフロー
+![image](https://github.com/Shvain/classroom-reservation-system/assets/38131740/c9e984d5-cf46-4c3f-a933-db9aec0f6574)
+
+
+
 ## 各種ドキュメント共有リンク
 - [UI仕様書](<https://nkzacjp-my.sharepoint.com/:w:/g/personal/tk220403_tks_iput_ac_jp/Ec4NwxzFdHFAsoy7MWKbUlwBb3XailfUp4QJaofdw76ayw?e=aIcnYN>)
 
@@ -34,5 +39,5 @@
 
 - [システム構造仕様書](<https://nkzacjp-my.sharepoint.com/:w:/g/personal/tk220403_tks_iput_ac_jp/EbKiQ89kJcNHhF285RlOpbMBX31gK6HkhTSxIqDytJhIRA?e=WS07Dn>)
 
-- [デザインスケッチMIRO](<https://miro.com/ja/>)
+- [プロトタイプ制作Figma](<https://www.figma.com/design/lR7rddqLUc0FCt0ytfHYaE/%E3%82%BD%E3%83%95%E3%83%88%E3%82%A6%E3%82%A7%E3%82%A2%E9%96%8B%E7%99%BA9%E7%8F%AD?node-id=0-1&t=CYEbN1hRYMHziYVF-1>)
 
