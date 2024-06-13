@@ -1,6 +1,5 @@
 package src;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import java.awt.Dialog;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,9 +8,9 @@ import java.sql.Statement;
 import java.text.DateFormat;											// @2
 import java.text.ParseException;										// @2
 import java.text.SimpleDateFormat;										// @2
-import	java.util.ArrayList;											// @1
+import java.util.ArrayList;											// @1
 import java.util.Calendar;												// @2
-import	java.util.List;													// @1
+import java.util.List;													// @1
 
 public class ReservationControl {
 	// MySQLに接続するためのデータ
@@ -19,8 +18,8 @@ public class ReservationControl {
 	Statement	sqlStmt;
 	// String		sqlUserID	= "your ID";								// ユーザID
 	// String		sqlPassword	= "your pass";								// パスワード
-	String		sqlUserID	= dotenv.get("SQL_USER_ID");							
-	String		sqlPassword	= dotenv.get("SQL_PASSWORD");
+	String		sqlUserID	= "root";							
+	String		sqlPassword	= "Pigson@3987";
 	// パスワード
 	// 予約システムのユーザID及びLogin状態
 	String		reservationUserID;
@@ -95,10 +94,10 @@ public class ReservationControl {
 						frame.buttonLog.setLabel( "ログアウト");		// ログインボタンの表示をログアウトに変更
 						frame.tfLoginID.setText( reservationUserID);	// ログインユーザIDにログイン済みのIDを表示
 					} else {											// パスワードが正しくない時
-						res = "IDまたはパスワードが違います．";			// 結果表示エリアに表示するメッセージをセット
+						res = "IDまたはパスワードが違います.";			// 結果表示エリアに表示するメッセージをセット
 					}
 				} else {												// 非登録ユーザの時
-					res = "IDが違います．";								// 結果表示エリアに表示するメッセージをセット
+					res = "IDが違います.";								// 結果表示エリアに表示するメッセージをセット
 				}
 			} catch( Exception e) {										// 例外発生時
 				e.printStackTrace();									// StackTraceを表示
@@ -123,7 +122,7 @@ public class ReservationControl {
 				openTime	= rs.getString( "open_time");				// @1 open_time属性データの取得
 				closeTime	= rs.getString( "close_time");				// @1 close_time属性データの取得
 				// @1 教室概要データの作成
-				res = exp + "　利用可能時間：" + openTime.substring( 0,5) + "～" + closeTime.substring( 0,5);	// @1
+				res = exp + "利用可能時間：" + openTime.substring( 0,5) + "～" + closeTime.substring( 0,5);	// @1
 			} else {													// @1 該当するレコードが無い場合
 				res = "教室番号が違います．";							// @1 結果表示エリアに表示する文言をセット
 			}															// @1
@@ -135,7 +134,7 @@ public class ReservationControl {
 	}																	// @1
 																		// @1
 	//// @1 全てのfacility_idを取得するメソッド
-	public	List	getFacilityId() {									// @1
+	public	List<String>	getFacilityId() {									// @1
 		List<String> facilityId	= new ArrayList<String>();				// @1 全てのfacilityIDを入れるリストを作成
 		connectDB();													// @1 MySQLに接続
 		try {															// @1
@@ -187,7 +186,7 @@ public class ReservationControl {
 				String	inData = ryear_str + "-" + rmonth_str + "-" + rday_str;		// @2 入力日付を文字列形式でyyyy-MM-dd形式に合成
 				String	convData = df.format( df.parse( inData));					// @2 入力日付をSimpleDateFormat形式に変換
 				if( !inData.equals( convData)) {									// @2 2つの文字列が等しくない時．
-					res	= "日付の書式を修正して下さい（年：西暦4桁，月：1～12，日：1～31(各月月末まで))";	// @2 エラー文を設定し，新規予約終了
+					res	= "日付の書式を修正して下さい（年:西暦4桁,月:1～12,日:1～31(各月月末まで))";	// @2 エラー文を設定し，新規予約終了
 					return	res;													// @2
 				}																	// @2
 			} catch( ParseException p) {											// @2 年月日の文字が誤っていてSimpleDateFormatに変換不可の時
@@ -319,5 +318,22 @@ public class ReservationControl {
 			e.printStackTrace();													// @2 StackTraceをコンソールに表示
 		}																			// @2
 		return	abailableTime;														// @2 open_time,close_timeの「時」を返す（エラーなら{0,0}が返る
+	}
+
+	public String ReservationInformation( MainFrame frame) {
+		String res = "";													// 結果を入れる戻り値変数を初期化（Nullを結果）
+		
+		if( flagLogin) {
+			// 予約情報画面生成
+			ReservationInformation	ri = new ReservationInformation(frame, null);
+			ri.setBounds( 100, 100, 800, 500);							// Windowの位置とサイズ設定
+			ri.setVisible( true);
+		} else {
+			res = "ログインして下さい";
+		}
+		return res;
+
+
+
 	}
 }
