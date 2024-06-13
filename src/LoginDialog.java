@@ -29,7 +29,7 @@ public class LoginDialog extends Dialog implements ActionListener, WindowListene
 		super( arg0, "Login", true);					// Superクラスのコンストラクタ呼出
 		canceled	= true;								// キャンセルの初期値設定
 		
-		// テキストフィールド生成x
+		// テキストフィールド生成
 		tfUserID	= new	TextField( "", 10);			// ユーザIDテキストフィールド生成
 		tfPassword	= new	TextField( "", 10);			// パスワードテキストフィールド生成
 		tfPassword.setEchoChar( '*');					// パスワードは*表示とする
