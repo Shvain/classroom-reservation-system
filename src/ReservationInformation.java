@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.List;
 
 
 public class ReservationInformation extends Dialog implements ActionListener, WindowListener {
@@ -19,7 +20,9 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
     ReservationControl	rc;
 
     Panel panelNorth;
-    Panel panelCenter;
+	Panel panelCenter;
+    Panel panelCenterSub1;
+	Panel panelCenterSub2;
     Panel panelSouth;
 
     Button buttonReservationCansel;
@@ -28,7 +31,8 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
     TextField   tfFacility;
 	TextArea taReservations;
 
-    public ReservationInformation( Frame owner1, ReservationControl rc, String reservationUserID){
+    public ReservationInformation( Frame owner1, ReservationControl rc, String reservationUserID
+	, List<ReservationControl.Reservation> reservations){
         super( owner1, "予約情報", true);
         this.rc = rc;
 
@@ -37,17 +41,28 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
         panelNorth = new Panel();
         panelCenter = new Panel();
         panelSouth = new Panel();
+		panelCenterSub1 = new Panel();
+		panelCenterSub2 = new Panel();
 
         // ログインID用表示ボックスの生成
-		tfLoginID = new TextField( "未ログイン", 10);
+		tfLoginID = new TextField( reservationUserID, 10);
 		tfLoginID.setEditable( false);
+
+		taReservations = new TextArea(10, 50); // 予約情報を表示するTextArea
+        taReservations.setEditable(false);
 
         panelNorth.add( new Label( "あなたの予約情報"));
         panelNorth.add( new Label( ""));
         panelNorth.add( new Label( "ログインID"));
         panelNorth.add( tfLoginID);
 
-        panelCenter.add( new Label( "予約時間リスト"));
+        panelCenterSub1.add( new Label( "予約時間リスト"));
+		panelCenterSub2.add( taReservations);
+
+		panelCenter = new Panel( new BorderLayout());			// @1 panelNorthをBorderLayoutのパネルで生成
+		panelCenter.add( panelCenterSub1, BorderLayout.NORTH);	// @1 panelNorthSub1を上部に付加
+		panelCenter.add( panelCenterSub2, BorderLayout.CENTER);
+
         //ここにデータベースから読み取った予約情報を表示する。
 
         panelSouth.add( buttonReservationCansel);
@@ -61,6 +76,15 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 
         buttonReservationCansel.addActionListener( this);
 
+		if (reservations.isEmpty()) {
+            taReservations.setText("予約情報がありません");
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (ReservationControl.Reservation reservation : reservations) {
+                sb.append(reservation.toString()).append("\n");
+            }
+            taReservations.setText(sb.toString());
+        }
     }
 
     @Override

@@ -320,42 +320,39 @@ public class ReservationControl {
 		return	abailableTime;														// @2 open_time,close_timeの「時」を返す（エラーなら{0,0}が返る
 	}
 
-	// class Reservation {
-	// 	private int facility_id;
-	// 	private String date;
-	// 	private String day;
-	// 	private String start_time;
-	// 	private String end_time;
+	class Reservation {
+		private int facility_id;
+		private String date;
+		private String day;
+		private String start_time;
+		private String end_time;
 	
-	// 	public Reservation(int facility_id, String date, String day, String start_time, String end_time) {
-	// 		this.facility_id = facility_id;
-	// 		this.date = date;
-	// 		this.day = day;
-	// 		this.start_time = start_time;
-	// 		this.end_time = end_time;
-	// 	}
+		public Reservation(int facility_id, String date, String day, String start_time, String end_time) {
+			this.facility_id = facility_id;
+			this.date = date;
+			this.day = day;
+			this.start_time = start_time;
+			this.end_time = end_time;
+		}
 	
-	// 	@Override
-	// 	public String toString() {
-	// 		return "Reservation{" +
-	// 				"facilityId=" + facility_id +
-	// 				", date='" + date + '\'' +
-	// 				", day='" + day + '\'' +
-	// 				", startTime='" + start_time + '\'' +
-	// 				", endTime='" + end_time + '\'' +
-	// 				'}';
-	// 	}
-	// }
+		@Override
+		public String toString() {
+			return "Reservation{" +
+					"facilityId=" + facility_id +
+					", date='" + date + '\'' +
+					", day='" + day + '\'' +
+					", startTime='" + start_time + '\'' +
+					", endTime='" + end_time + '\'' +
+					'}';
+		}
+	}
 
 
 	public String ReservationInformation( MainFrame frame) {
 		String res = "";	// 結果を入れる戻り値変数を初期化（Nullを結果）
 		
 		if( flagLogin) {
-			// 予約情報画面生成
-			ReservationInformation	ri = new ReservationInformation(frame, this, reservationUserID);
-			ri.setBounds( 100, 100, 800, 500);							// Windowの位置とサイズ設定
-			ri.setVisible( true);
+			List<Reservation> reservations = new ArrayList<>();
 			try{
 				connectDB();
 				String sql = "SELECT facility_id, date, day, start_time, end_time FROM reservation WHERE user_id = '" + reservationUserID + "';";
@@ -368,6 +365,7 @@ public class ReservationControl {
 					String day = rdata.getString("day");
 					String start_time = rdata.getString("start_time");
 					String end_time = rdata.getString("end_time");
+					reservations.add(new Reservation(facility_id, date, day, start_time, end_time));
 
 					// 取得した予約情報をコンソールに出力
 					System.out.println("Facility ID: " + facility_id);
@@ -380,8 +378,14 @@ public class ReservationControl {
 
 			} catch( Exception e) {
 				e.printStackTrace();
+			} finally {
+				closeDB();
 			}
-			closeDB();
+
+			// 予約情報画面生成
+			ReservationInformation	ri = new ReservationInformation(frame, this, reservationUserID, reservations);
+			ri.setBounds( 100, 100, 800, 400);							// Windowの位置とサイズ設定
+			ri.setVisible( true);
 		}
 		else {
 			res = "ログインして下さい";
