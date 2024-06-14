@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+
 public class ReservationInformation extends Dialog implements ActionListener, WindowListener {
     
     ReservationControl	rc;
@@ -25,8 +26,9 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 
     TextField	tfLoginID;	
     TextField   tfFacility;
+	TextArea taReservations;
 
-    public ReservationInformation( Frame owner1, ReservationControl rc){
+    public ReservationInformation( Frame owner1, ReservationControl rc, String reservationUserID){
         super( owner1, "予約情報", true);
         this.rc = rc;
 

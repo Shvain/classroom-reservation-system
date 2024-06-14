@@ -165,7 +165,7 @@ public class MainFrame extends Frame implements ActionListener, WindowListener{
 			result = reservationControl.makeReservation( this);	// @2
 		// @2 押下ボタンが予約確認ボタンの時，ReservationInformationメソッドを実行
 		} else if( e.getSource() == buttonReservationInformation) {		// @2
-			result = reservationControl.ReservationInformastion( this);	// @2
+			result = reservationControl.ReservationInformation( this);	// @2
 		}
 		textMessage.setText( result);							// メソッドの戻り値をテキストエリアに表示
 	}

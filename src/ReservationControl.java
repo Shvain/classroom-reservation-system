@@ -320,20 +320,73 @@ public class ReservationControl {
 		return	abailableTime;														// @2 open_time,close_timeの「時」を返す（エラーなら{0,0}が返る
 	}
 
+	// class Reservation {
+	// 	private int facility_id;
+	// 	private String date;
+	// 	private String day;
+	// 	private String start_time;
+	// 	private String end_time;
+	
+	// 	public Reservation(int facility_id, String date, String day, String start_time, String end_time) {
+	// 		this.facility_id = facility_id;
+	// 		this.date = date;
+	// 		this.day = day;
+	// 		this.start_time = start_time;
+	// 		this.end_time = end_time;
+	// 	}
+	
+	// 	@Override
+	// 	public String toString() {
+	// 		return "Reservation{" +
+	// 				"facilityId=" + facility_id +
+	// 				", date='" + date + '\'' +
+	// 				", day='" + day + '\'' +
+	// 				", startTime='" + start_time + '\'' +
+	// 				", endTime='" + end_time + '\'' +
+	// 				'}';
+	// 	}
+	// }
+
+
 	public String ReservationInformation( MainFrame frame) {
-		String res = "";													// 結果を入れる戻り値変数を初期化（Nullを結果）
+		String res = "";	// 結果を入れる戻り値変数を初期化（Nullを結果）
 		
 		if( flagLogin) {
 			// 予約情報画面生成
-			ReservationInformation	ri = new ReservationInformation(frame, null);
+			ReservationInformation	ri = new ReservationInformation(frame, this, reservationUserID);
 			ri.setBounds( 100, 100, 800, 500);							// Windowの位置とサイズ設定
 			ri.setVisible( true);
-		} else {
+			try{
+				connectDB();
+				String sql = "SELECT facility_id, date, day, start_time, end_time FROM reservation WHERE user_id = '" + reservationUserID + "';";
+				System.out.println( sql);
+				ResultSet rdata = sqlStmt.executeQuery( sql);
+
+				while (rdata.next()) {
+					int facility_id = rdata.getInt("facility_id");
+					String date = rdata.getString("date");
+					String day = rdata.getString("day");
+					String start_time = rdata.getString("start_time");
+					String end_time = rdata.getString("end_time");
+
+					// 取得した予約情報をコンソールに出力
+					System.out.println("Facility ID: " + facility_id);
+					System.out.println("Date: " + date);
+					System.out.println("Day: " + day);
+					System.out.println("Start Time: " + start_time);
+					System.out.println("End Time: " + end_time);
+					System.out.println("-------------");
+				}
+
+			} catch( Exception e) {
+				e.printStackTrace();
+			}
+			closeDB();
+		}
+		else {
 			res = "ログインして下さい";
 		}
 		return res;
-
-
-
 	}
 }
+
