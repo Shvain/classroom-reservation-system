@@ -3,6 +3,7 @@ package src;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Label;
 import java.awt.Panel;
@@ -12,9 +13,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import src.ReservationControl.ReservationActionHandler;
 
@@ -96,8 +101,20 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
             // JTableを作成し、モデルを設定
             tableReservations = new JTable(model);
 
+			// テーブルの幅を設定
+			TableColumnModel columnModel = tableReservations.getColumnModel();
+			columnModel.getColumn(0).setPreferredWidth(50);
+			columnModel.getColumn(1).setPreferredWidth(50);
+			columnModel.getColumn(2).setPreferredWidth(150);
+			columnModel.getColumn(3).setPreferredWidth(150);
+			columnModel.getColumn(4).setPreferredWidth(100);
+			columnModel.getColumn(5).setPreferredWidth(100);
+
+			tableReservations.setPreferredScrollableViewportSize(new Dimension(700,300));
+
             // JTableをスクロールペインに追加
             JScrollPane scrollPane = new JScrollPane(tableReservations);
+			scrollPane.setPreferredSize(new Dimension(700, 300));
             panelCenter.add(scrollPane, BorderLayout.CENTER);
 
 			actionHandler = rc. new ReservationActionHandler(rc, model);
@@ -129,7 +146,16 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
 		if("該当の予約をキャンセル".equals(command)){
-			actionHandler.handleCancelAction();
+			int response = JOptionPane.showConfirmDialog(
+				this,
+				"本当に予約をキャンセルしますか？\nこの動作は元に戻すことはできません。",
+				"予約キャンセル",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE
+			);
+			if (response == JOptionPane.YES_OPTION) {
+				actionHandler.handleCancelAction();
+			}
 		}
 	}
 
