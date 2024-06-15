@@ -1,16 +1,22 @@
 package src;
 
 import java.awt.Dialog;
+import java.awt.image.TileObserver;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Time;
 import java.text.DateFormat;											// @2
 import java.text.ParseException;										// @2
 import java.text.SimpleDateFormat;										// @2
 import java.util.ArrayList;											// @1
 import java.util.Calendar;												// @2
 import java.util.List;													// @1
+import java.util.Date;
+import javax.swing.table.DefaultTableModel;
+import javax.xml.crypto.Data;
+
 
 public class ReservationControl {
 	// MySQLに接続するためのデータ
@@ -322,27 +328,54 @@ public class ReservationControl {
 
 	class Reservation {
 		private int facility_id;
-		private String date;
-		private String day;
-		private String start_time;
-		private String end_time;
+		private Date date;
+		private Date day;
+		private Date start_time;
+		private Date end_time;
+
+		private static final SimpleDateFormat OUTPUT_DATE_FORMAT = new SimpleDateFormat("yyyy年MM月dd日");
+		private static final SimpleDateFormat OUTPUT_TIME_FORMAT = new SimpleDateFormat("HH時mm分");
+
+		private static final SimpleDateFormat INPUT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+		private static final SimpleDateFormat INPUT_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	
-		public Reservation(int facility_id, String date, String day, String start_time, String end_time) {
+		public Reservation(int facility_id, String date, String day, String start_time, String end_time) throws ParseException{
 			this.facility_id = facility_id;
-			this.date = date;
-			this.day = day;
-			this.start_time = start_time;
-			this.end_time = end_time;
+			this.date = INPUT_DATE_FORMAT.parse(date);
+			this.day = INPUT_DATE_FORMAT.parse(day);
+			this.start_time = INPUT_TIME_FORMAT.parse(start_time);
+			this.end_time = INPUT_TIME_FORMAT.parse(end_time);
+		}
+
+		 // Getterメソッドを追加
+		 public int getFacilityId() {
+			return facility_id;
+		}
+	
+		public String getFormattedDate() {
+			return OUTPUT_DATE_FORMAT.format(date);
+		}
+	
+		public String getFormattedDay() {
+			return OUTPUT_DATE_FORMAT.format(day);
+		}
+	
+		public String getFormattedStartTime() {
+			return OUTPUT_TIME_FORMAT.format(start_time);
+		}
+	
+		public String getFormattedEndTime() {
+			return OUTPUT_TIME_FORMAT.format(end_time);
 		}
 	
 		@Override
 		public String toString() {
 			return "Reservation{" +
 					"facilityId=" + facility_id +
-					", date='" + date + '\'' +
-					", day='" + day + '\'' +
-					", startTime='" + start_time + '\'' +
-					", endTime='" + end_time + '\'' +
+					", date='" + getFormattedDate() + '\'' +
+					", day='" + getFormattedDay() + '\'' +
+					", startTime='" + getFormattedStartTime() + '\'' +
+					", endTime='" + getFormattedEndTime() + '\'' +
 					'}';
 		}
 	}
@@ -366,14 +399,6 @@ public class ReservationControl {
 					String start_time = rdata.getString("start_time");
 					String end_time = rdata.getString("end_time");
 					reservations.add(new Reservation(facility_id, date, day, start_time, end_time));
-
-					// 取得した予約情報をコンソールに出力
-					System.out.println("Facility ID: " + facility_id);
-					System.out.println("Date: " + date);
-					System.out.println("Day: " + day);
-					System.out.println("Start Time: " + start_time);
-					System.out.println("End Time: " + end_time);
-					System.out.println("-------------");
 				}
 
 			} catch( Exception e) {
@@ -392,5 +417,41 @@ public class ReservationControl {
 		}
 		return res;
 	}
+
+	public class ReservationActionHandler {
+		private DefaultTableModel model;
+		private ReservationControl rc;
+
+		public ReservationActionHandler(ReservationControl rc, DefaultTableModel model) {
+			this.rc = rc;
+			this.model = model;
+		}
+
+		public void handleCancelAction() {
+			for (int i = model.getRowCount() - 1; i >= 0; i--) {
+				if ((Boolean) model.getValueAt(i,0)) {
+					int facility_id = (Integer) model.getValueAt(i, 1);
+					String date = (String) model.getValueAt(i, 2);
+					String day = (String) model.getValueAt(i, 3);
+					String start_time = (String) model.getValueAt(i, 4);
+					String end_time = (String) model.getValueAt(i, 5);
+					deleteReservation(facility_id, date, day, start_time, end_time);
+					model.removeRow(i);
+				}
+			}
+		}
+		private void deleteReservation(int facility_id, String date, String day, String start_time, String end_time) {
+			try {
+				connectDB();
+				String sql = "DELETE FROM reservation WHERE facility_id = '" + facility_id + "' AND date = '" + date + "' AND day = '" + day + "' AND start_time = '" + start_time + "' AND end_time = '" + end_time + "';";
+				rc.sqlStmt.executeUpdate(sql);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				closeDB();
+			}
+		}
+	}
+
 }
 
