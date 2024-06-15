@@ -1,12 +1,10 @@
 package src;
 
 import java.awt.Dialog;
-import java.awt.image.TileObserver;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Time;
 import java.text.DateFormat;											// @2
 import java.text.ParseException;										// @2
 import java.text.SimpleDateFormat;										// @2
@@ -14,8 +12,8 @@ import java.util.ArrayList;											// @1
 import java.util.Calendar;												// @2
 import java.util.List;													// @1
 import java.util.Date;
+
 import javax.swing.table.DefaultTableModel;
-import javax.xml.crypto.Data;
 
 
 public class ReservationControl {

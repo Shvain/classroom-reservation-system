@@ -17,8 +17,9 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableColumnModel;
 
 import src.ReservationControl.ReservationActionHandler;
@@ -117,6 +118,13 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 			scrollPane.setPreferredSize(new Dimension(700, 300));
             panelCenter.add(scrollPane, BorderLayout.CENTER);
 
+			model.addTableModelListener(new TableModelListener() {
+				@Override
+				public void tableChanged(TableModelEvent e) {
+					updateButtonState();
+				}
+			});
+
 			actionHandler = rc. new ReservationActionHandler(rc, model);
         }
 
@@ -130,17 +138,19 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
         addWindowListener( this);
 
         buttonReservationCansel.addActionListener( this);
-
-		// if (reservations.isEmpty()) {
-        //     taReservations.setText("予約情報がありません");
-        // } else {
-        //     StringBuilder sb = new StringBuilder();
-        //     for (ReservationControl.Reservation reservation : reservations) {
-        //         sb.append(reservation.toString()).append("\n");
-        //     }
-        //     taReservations.setText(sb.toString());
-        // }
+		updateButtonState();
     }
+
+	private void updateButtonState() {
+		boolean isSelected = false;
+		for (int i = 0; i < tableReservations.getRowCount(); i++) {
+			if ((Boolean) tableReservations.getValueAt(i, 0)) {
+				isSelected = true;
+				break;
+			}
+		}
+		buttonReservationCansel.setEnabled(isSelected);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
