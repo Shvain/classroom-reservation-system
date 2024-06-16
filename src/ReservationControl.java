@@ -325,18 +325,24 @@ public class ReservationControl {
 	}
 
 	class Reservation {
+		// 予約情報を保持するクラス
 		private int facility_id;
 		private Date date;
 		private Date day;
 		private Date start_time;
 		private Date end_time;
 
+		// 日付のフォーマットを定義
+
+		//インターフェースに表示する日付のフォーマット
 		private static final SimpleDateFormat OUTPUT_DATE_FORMAT = new SimpleDateFormat("yyyy年MM月dd日");
 		private static final SimpleDateFormat OUTPUT_TIME_FORMAT = new SimpleDateFormat("HH時mm分");
 
+		// データベースから取得する日付のフォーマット
 		private static final SimpleDateFormat INPUT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 		private static final SimpleDateFormat INPUT_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
-	
+
+		// コンストラクタを追加
 		public Reservation(int facility_id, String date, String day, String start_time, String end_time) throws ParseException{
 			this.facility_id = facility_id;
 			this.date = INPUT_DATE_FORMAT.parse(date);
@@ -345,8 +351,8 @@ public class ReservationControl {
 			this.end_time = INPUT_TIME_FORMAT.parse(end_time);
 		}
 
-		 // Getterメソッドを追加
-		 public int getFacilityId() {
+		// Getメソッドを追加
+		public int getFormatteFacilityId() {
 			return facility_id;
 		}
 	
@@ -370,7 +376,7 @@ public class ReservationControl {
 		public String toString() {
 			return "Reservation{" +
 					"facilityId=" + facility_id +
-					", date='" + getFormattedDate() + '\'' +
+					", date='" + getFormattedDate() + '\'' +  //シングルクォートでエスケープ
 					", day='" + getFormattedDay() + '\'' +
 					", startTime='" + getFormattedStartTime() + '\'' +
 					", endTime='" + getFormattedEndTime() + '\'' +

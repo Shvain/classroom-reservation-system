@@ -45,7 +45,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 
     public ReservationInformation( Frame owner1, ReservationControl rc, String reservationUserID
 	, List<ReservationControl.Reservation> reservations){
-        super( owner1, "予約情報", true);
+        super( owner1, "予約状況", true);
         this.rc = rc;
 
         buttonReservationCansel = new Button( "該当の予約をキャンセル");
@@ -60,9 +60,9 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 		tfLoginID = new TextField( reservationUserID, 10);
 		tfLoginID.setEditable( false);
 
-		panelNorth.add( new Label( "あなたの予約情報"));
+		panelNorth.add( new Label( "あなたの予約状況"));
         panelNorth.add( new Label( ""));
-        panelNorth.add( new Label( "ログインID"));
+        panelNorth.add( new Label( "ログインID:"));
         panelNorth.add( tfLoginID);
 
 		if (reservations.isEmpty()) {
@@ -90,7 +90,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
             for (ReservationControl.Reservation reservation : reservations) {
                 Object[] row = {
 					Boolean.FALSE,
-                    reservation.getFacilityId(),
+                    reservation.getFormatteFacilityId(),
                     reservation.getFormattedDate(),
                     reservation.getFormattedDay(),
                     reservation.getFormattedStartTime(),
@@ -102,7 +102,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
             // JTableを作成し、モデルを設定
             tableReservations = new JTable(model);
 
-			// テーブルの幅を設定
+			// カラムのテーブル幅を設定
 			TableColumnModel columnModel = tableReservations.getColumnModel();
 			columnModel.getColumn(0).setPreferredWidth(50);
 			columnModel.getColumn(1).setPreferredWidth(50);
@@ -111,6 +111,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 			columnModel.getColumn(4).setPreferredWidth(100);
 			columnModel.getColumn(5).setPreferredWidth(100);
 
+			// テーブルのサイズを設定
 			tableReservations.setPreferredScrollableViewportSize(new Dimension(700,300));
 
             // JTableをスクロールペインに追加
@@ -118,6 +119,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 			scrollPane.setPreferredSize(new Dimension(700, 300));
             panelCenter.add(scrollPane, BorderLayout.CENTER);
 
+			// テーブルの変更を監視してボタンの有効無効を切り替える
 			model.addTableModelListener(new TableModelListener() {
 				@Override
 				public void tableChanged(TableModelEvent e) {
@@ -158,7 +160,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 		if("該当の予約をキャンセル".equals(command)){
 			int response = JOptionPane.showConfirmDialog(
 				this,
-				"本当に予約をキャンセルしますか？\nこの動作は元に戻すことはできません。",
+				"本当に予約をキャンセルしますか？\n※この動作は元に戻すことはできません。",
 				"予約キャンセル",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE
