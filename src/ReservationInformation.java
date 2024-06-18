@@ -43,9 +43,9 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 	Label noReservationsLabel; // データがない場合のメッセージ表示用
 	ReservationActionHandler actionHandler;
 
-    public ReservationInformation( Frame owner1, ReservationControl rc, String reservationUserID
+    public ReservationInformation( Frame owner, ReservationControl rc, String reservationUserID
 	, List<ReservationControl.Reservation> reservations){
-        super( owner1, "予約状況", true);
+        super( owner, "予約状況", true);
         this.rc = rc;
 
         buttonReservationCansel = new Button( "該当の予約をキャンセル");
@@ -53,8 +53,6 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
         panelNorth = new Panel();
         panelCenter = new Panel();
         panelSouth = new Panel();
-		panelCenterSub1 = new Panel();
-		panelCenterSub2 = new Panel();
 
         // ログインID用表示ボックスの生成
 		tfLoginID = new TextField( reservationUserID, 10);

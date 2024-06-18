@@ -20,8 +20,6 @@ public class ReservationControl {
 	// MySQLに接続するためのデータ
 	Connection	sqlCon;
 	Statement	sqlStmt;
-	// String		sqlUserID	= "your ID";								// ユーザID
-	// String		sqlPassword	= "your pass";								// パスワード
 	String		sqlUserID	= "root";							
 	String		sqlPassword	= "Pigson@3987";
 	// パスワード
@@ -45,7 +43,7 @@ public class ReservationControl {
 			sqlCon	= DriverManager.getConnection( url, sqlUserID, sqlPassword);
 			sqlStmt	= sqlCon.createStatement();							// Statement Objectを生成
 		} catch(Exception e) {											// 例外発生時
-			e.printStackTrace();										// Stack Traceを表示
+			e.printStackTrace();								// Stack Traceを表示
 		}
 	}
 	
@@ -327,29 +325,38 @@ public class ReservationControl {
 	class Reservation {
 		// 予約情報を保持するクラス
 		private int facility_id;
-		private Date date;
-		private Date day;
-		private Date start_time;
-		private Date end_time;
+		private String date;
+		private String day;
+		private String start_time;
+		private String end_time;
+		// private Date date;
+		// private Date day;
+		// private Date start_time;
+		// private Date end_time;
 
 		// 日付のフォーマットを定義
 
-		//インターフェースに表示する日付のフォーマット
-		private static final SimpleDateFormat OUTPUT_DATE_FORMAT = new SimpleDateFormat("yyyy年MM月dd日");
-		private static final SimpleDateFormat OUTPUT_TIME_FORMAT = new SimpleDateFormat("HH時mm分");
+		// //インターフェースに表示する日付のフォーマット
+		// private static final SimpleDateFormat OUTPUT_DATE_FORMAT = new SimpleDateFormat("yyyy年MM月dd日");
+		// private static final SimpleDateFormat OUTPUT_TIME_FORMAT = new SimpleDateFormat("HH時mm分");
 
-		// データベースから取得する日付のフォーマット
-		private static final SimpleDateFormat INPUT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-		private static final SimpleDateFormat INPUT_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+		// // データベースから取得する日付のフォーマット
+		// private static final SimpleDateFormat INPUT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+		// private static final SimpleDateFormat INPUT_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
-		// コンストラクタを追加
-		public Reservation(int facility_id, String date, String day, String start_time, String end_time) throws ParseException{
+		// // コンストラクタを追加
+		public Reservation(int facility_id, String date, String day, String start_time, String end_time) {
 			this.facility_id = facility_id;
-			this.date = INPUT_DATE_FORMAT.parse(date);
-			this.day = INPUT_DATE_FORMAT.parse(day);
-			this.start_time = INPUT_TIME_FORMAT.parse(start_time);
-			this.end_time = INPUT_TIME_FORMAT.parse(end_time);
+			this.date = date;
+			this.day = day;
+			this.start_time = start_time;
+			this.end_time = end_time;
 		}
+		// 	this.date = INPUT_DATE_FORMAT.parse(date);
+		// 	this.day = INPUT_DATE_FORMAT.parse(day);
+		// 	this.start_time = INPUT_TIME_FORMAT.parse(start_time);
+		// 	this.end_time = INPUT_TIME_FORMAT.parse(end_time);
+		// }
 
 		// Getメソッドを追加
 		public int getFormatteFacilityId() {
@@ -357,25 +364,25 @@ public class ReservationControl {
 		}
 	
 		public String getFormattedDate() {
-			return OUTPUT_DATE_FORMAT.format(date);
+			return date.format(date);
 		}
 	
 		public String getFormattedDay() {
-			return OUTPUT_DATE_FORMAT.format(day);
+			return day.format(day);
 		}
 	
 		public String getFormattedStartTime() {
-			return OUTPUT_TIME_FORMAT.format(start_time);
+			return start_time.format(start_time);
 		}
 	
 		public String getFormattedEndTime() {
-			return OUTPUT_TIME_FORMAT.format(end_time);
+			return end_time.format(end_time);
 		}
 	
 		@Override
 		public String toString() {
 			return "Reservation{" +
-					"facilityId=" + facility_id +
+					"facilityId=" + getFormatteFacilityId() +
 					", date='" + getFormattedDate() + '\'' +  //シングルクォートでエスケープ
 					", day='" + getFormattedDay() + '\'' +
 					", startTime='" + getFormattedStartTime() + '\'' +
@@ -446,9 +453,31 @@ public class ReservationControl {
 		}
 		private void deleteReservation(int facility_id, String date, String day, String start_time, String end_time) {
 			try {
+				// デバッグ用ログ出力
+				System.out.println("Deleting reservation:");
+				System.out.println("facility_id: " + facility_id);
+				System.out.println("date: " + date);
+				System.out.println("day: " + day);
+				System.out.println("start_time: " + start_time);
+				System.out.println("end_time: " + end_time);
 				connectDB();
 				String sql = "DELETE FROM reservation WHERE facility_id = '" + facility_id + "' AND date = '" + date + "' AND day = '" + day + "' AND start_time = '" + start_time + "' AND end_time = '" + end_time + "';";
-				rc.sqlStmt.executeUpdate(sql);
+				int rowsAffected = rc.sqlStmt.executeUpdate(sql);
+				System.out.println( sql);
+
+				// 自動コミットが無効の場合は明示的にコミット
+				if (!rc.sqlCon.getAutoCommit()) {
+					rc.sqlCon.commit();
+					System.out.println("Transaction committed.");
+				}
+				
+				// デバッグ用ログ出力
+				if (rowsAffected == 0) {
+					System.out.println("No rows deleted.");
+				} else {
+					System.out.println("Reservation deleted successfully.");
+				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
