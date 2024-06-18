@@ -36,7 +36,7 @@ public class ReservationControl {
 	private	void	connectDB() {
 		try {
 			// MySQLに接続
-			//Class.forName( "org.git.mm.mysql.Driver");						// MySQLのドライバをLoadする
+			//Class.forName( "org.gjt.mm.mysql.Driver");						// MySQLのドライバをLoadする
 			Class.forName( "com.mysql.cj.jdbc.Driver");			
 			//String url = "jdbc:mysql://localhost?useUnicode=true&characterEncoding=SJIS";
 			String	url = "jdbc:mysql://localhost:3306/db_reservation?useUnicode=true&characterEncoding=SJIS";
