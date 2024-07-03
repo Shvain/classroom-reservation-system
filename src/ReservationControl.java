@@ -26,6 +26,7 @@ public class ReservationControl {
 	// 予約システムのユーザID及びLogin状態
 	String		reservationUserID;
 	private	boolean	flagLogin;											// ログイン状態(ログイン済:true)
+	private MainFrame mainFrame;
 	
 	// ReservationControlクラスのコンストラクタ
 	ReservationControl(){
@@ -56,6 +57,10 @@ public class ReservationControl {
 			e.printStackTrace();										// StackTraceを表示
 		}
 	}
+
+	public ReservationControl(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+    }
 	
 	//// ログイン・ログアウトボタンの処理
 	public	String	loginLogout( MainFrame frame) {
@@ -130,9 +135,76 @@ public class ReservationControl {
 			}															// @1
 		} catch( Exception e) {											// @1 例外発生時
 			e.printStackTrace();										// @1 StackTraceをコンソールに表示
-		}																// @1
-		closeDB();														// @1 MySQLの接続を切断
-		return	res;													// @1
+			return	res;	
+		}
+
+		String	ryear_str	= mainFrame.tfYear.getText();								// @2 入力された年情報をテキストで取得
+		String	rmonth_str	= mainFrame.tfMonth.getText();								// @2 選択された月情報をテキストで取得
+		String	rday_str	= mainFrame.tfDay.getText();
+
+		if (ryear_str.isEmpty() || rmonth_str.isEmpty() || rday_str.isEmpty()) {
+            return res; // 何も入力されていない場合は教室概要のみ表示
+        }
+
+		// @2 月と日が一桁だったら，前に0を付加
+		if( rmonth_str.length() == 1) {											// @2 月の文字数が1桁の時
+			rmonth_str = "0" + rmonth_str;										// @2 　月の先頭に"0"を付加
+		}																		// @2
+		if( rday_str.length() == 1) {											// @2 日の文字数が1桁の時
+			rday_str = "0" + rday_str;											// @2 　日の先頭に"0"を付加
+		}																	// @2
+																				// @2
+		// @2 入力された日付が正しいか，以下2点をチェック
+		// @2   入力された文字が半角数字になっているか．
+		// @2   日付として成立している値か
+		try {																	// @2
+			DateFormat	df = new SimpleDateFormat( "yyyy-MM-dd");				// @2 日付のフォーマットを定義
+			df.setLenient( false);												// @2 日付フォーマットのチェックを厳格化
+			// @2 入力された日付を文字列に変換したものと，SimpleDateFormatに当てはめて同じ値になるかをチェック
+			String	inData = ryear_str + "-" + rmonth_str + "-" + rday_str;		// @2 入力日付を文字列形式でyyyy-MM-dd形式に合成
+			String	convData = df.format( df.parse( inData));					// @2 入力日付をSimpleDateFormat形式に変換
+			if( !inData.equals( convData)) {									// @2 2つの文字列が等しくない時．
+				res	= "日付の書式を修正して下さい（年:西暦4桁,月:1～12,日:1～31(各月月末まで))";	// @2 エラー文を設定し，新規予約終了
+				return	res;													// @2
+			}																	// @2
+		} catch( ParseException p) {											// @2 年月日の文字が誤っていてSimpleDateFormatに変換不可の時
+			res = "日付の値を修正して下さい";									// @2 数字以外，入力されていないことを想定したエラー処理
+			return	res;														// @2
+		}																		// @2
+																				// @2
+		// @2 入力された開始日が現時点より後であるかのチェック
+		Calendar	dateReservation = Calendar.getInstance();					// @2 
+		// @2 入力された予約日付及び現在の日付をCalendarクラスの情報として持つ
+		dateReservation.set( Integer.parseInt( ryear_str), Integer.parseInt( rmonth_str)-1, Integer.parseInt( rday_str));	//@2
+		Calendar	dateNow = Calendar.getInstance();
+		if (!dateReservation.after(dateNow)) {
+			res = "予約日が無効です";
+			return res;
+		}
+		// 予約状況の取得
+		try {
+			String rdate = ryear_str + "-" + rmonth_str + "-" + rday_str;  // 予約日付
+			String sql = "SELECT * FROM db_reservation.reservation WHERE facility_id = '" + facility_id + "' AND day = '" + rdate + "';";
+			ResultSet rs = sqlStmt.executeQuery(sql);
+	
+			// 予約情報の取得
+			if (rs.next()) {
+				res += "\n予約状況:\n";
+				do {
+					String start = rs.getString("start_time");
+					String end = rs.getString("end_time");
+					res += "開始時間: " + start.substring(0, 5) + " ～ 終了時間: " + end.substring(0, 5) + "\n";
+				} while (rs.next());
+			} else {
+				res += " 予約情報がありません。";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			res += " エラーが発生しました。予約情報の取得に失敗しました。";
+		} finally {
+			closeDB();  // データベース接続を閉じる
+		}
+		return res;
 	}																	// @1
 																		// @1
 	//// @1 全てのfacility_idを取得するメソッド
@@ -430,6 +502,7 @@ public class ReservationControl {
 	}
 
 	public class ReservationActionHandler {
+		String	res = "";
 		private DefaultTableModel model;
 		private ReservationControl rc;
 
@@ -460,6 +533,7 @@ public class ReservationControl {
 				System.out.println("day: " + day);
 				System.out.println("start_time: " + start_time);
 				System.out.println("end_time: " + end_time);
+				
 				connectDB();
 				String sql = "DELETE FROM reservation WHERE facility_id = '" + facility_id + "' AND date = '" + date + "' AND day = '" + day + "' AND start_time = '" + start_time + "' AND end_time = '" + end_time + "';";
 				int rowsAffected = rc.sqlStmt.executeUpdate(sql);
@@ -477,7 +551,7 @@ public class ReservationControl {
 				} else {
 					System.out.println("Reservation deleted successfully.");
 				}
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {

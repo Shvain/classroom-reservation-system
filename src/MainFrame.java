@@ -31,12 +31,13 @@ public class MainFrame extends Frame implements ActionListener, WindowListener{
 	ChoiceFacility	choiceFacility;								// @1 教室選択用コンボボックス
 	// テキストフィールドのインスタンス生成
 	TextField	tfLoginID;										// ログインIDを表示するテキストフィールド
+	public TextField   tfYear, tfMonth, tfDay;		// 年月日のテキストフィールド
 	// テキストエリアのインスタンス生成
 	TextArea	textMessage;									// 結果表示用メッセージ欄
 	
 	//// MainFrameコンストラクタ
 	public	MainFrame( ReservationControl rc) {
-		reservationControl	= rc;								// ReservationControlインスタンス保存
+		reservationControl = new ReservationControl(this);							// ReservationControlインスタンス保存
 
 		// ボタンの生成
 		buttonLog = new Button( " ログイン ");					// ログインボタン
@@ -48,7 +49,11 @@ public class MainFrame extends Frame implements ActionListener, WindowListener{
 		List<String> facilityId = new ArrayList<String>();		// @1 全てのfacilityIDを入れるリスト
 		facilityId 		= rc.getFacilityId();					// @1 全facilityIDを読出し，リストに入れる
 		choiceFacility	= new ChoiceFacility( facilityId);		// @1 教室選択用コンボボックスのインスタンス生成
-		
+		// テキストフィールドの生成（年月日）
+		tfYear		= new TextField("", 4);
+		tfMonth 	= new TextField("", 2);
+		tfDay		= new TextField("",2);
+
 		// ログインID用表示ボックスの生成
 		tfLoginID = new TextField( "未ログイン", 10);
 		tfLoginID.setEditable( false);
@@ -63,10 +68,17 @@ public class MainFrame extends Frame implements ActionListener, WindowListener{
 		panelNorthSub1.add( new Label( "ログインID:"));	// @1 ログインIDタイトルラベルを付加
 		panelNorthSub1.add( tfLoginID);							// @1 ログインID表示用テキストフィールドを付加
 																// @1
-		// @1 上部パネルの下パネルに教室選択及び教室概要ボタンを追加
+		// @1 上部パネルの下パネルに教室選択及び教室概要ボタンを追加							// @1 NorthSub2のパネルインスタンスを生成
 		panelNorthSub2 = new Panel();							// @1 NorthSub2のパネルインスタンスを生成
 		panelNorthSub2.add( new Label( "教室"));				// @1 教室選択コンボボックスのラベルを付加
 		panelNorthSub2.add( choiceFacility);					// @1 教室選択コンボボックスを付加
+		panelNorthSub2.add( new Label("予約日"));
+		panelNorthSub2.add( tfYear);
+		panelNorthSub2.add( new Label("年"));
+		panelNorthSub2.add( tfMonth);
+		panelNorthSub2.add( new Label("月"));
+		panelNorthSub2.add( tfDay);
+		panelNorthSub2.add( new Label("日"));
 		panelNorthSub2.add( new Label( ""));					// @1 コンボボックスとボタンの隙間をラベルで付加
 		panelNorthSub2.add( buttonExplanation);					// @1 教室概要表示ボタンを付加
 		panelNorthSub2.add( new Label( ""));				
@@ -158,8 +170,13 @@ public class MainFrame extends Frame implements ActionListener, WindowListener{
 		if( e.getSource() == buttonLog) {
 			result = reservationControl.loginLogout( this);
 		// @1 押下ボタンが教室概要ボタンの時，getFacilityExplanationメソッドを実行
-		} else if( e.getSource() == buttonExplanation) {		// @1
-			result = reservationControl.getFacilityExplanation( choiceFacility.getSelectedItem());	// @1
+		} else if (e.getSource() == buttonExplanation) {
+			String facilityId = choiceFacility.getSelectedItem();
+			if (tfYear.getText().isEmpty() || tfMonth.getText().isEmpty() || tfDay.getText().isEmpty()) {
+				result = reservationControl.getFacilityExplanation(facilityId);  // 年月日が入力されていない場合
+			} else {
+				result = reservationControl.getFacilityExplanation(facilityId);  // 年月日が入力されている場合
+			}
 		// @2 押下ボタンが新規予約ボタンの時，makeReservationメソッドを実行
 		} else if( e.getSource() == buttonReservation) {		// @2
 			result = reservationControl.makeReservation( this);	// @2
