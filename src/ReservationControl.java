@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;										// @2
 import java.util.ArrayList;											// @1
 import java.util.Calendar;												// @2
 import java.util.List;													// @1
-import java.util.Date;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -20,8 +19,8 @@ public class ReservationControl {
 	// MySQLに接続するためのデータ
 	Connection	sqlCon;
 	Statement	sqlStmt;
-	String		sqlUserID	= "root";							
-	String		sqlPassword	= "Pigson@3987";
+	String		sqlUserID	= "puser";							
+	String		sqlPassword	= "1234";
 	// パスワード
 	// 予約システムのユーザID及びLogin状態
 	String		reservationUserID;
@@ -37,8 +36,8 @@ public class ReservationControl {
 	private	void	connectDB() {
 		try {
 			// MySQLに接続
-			//Class.forName( "org.gjt.mm.mysql.Driver");						// MySQLのドライバをLoadする
-			Class.forName( "com.mysql.cj.jdbc.Driver");			
+			Class.forName( "org.gjt.mm.mysql.Driver");						// MySQLのドライバをLoadする
+			//Class.forName( "com.mysql.cj.jdbc.Driver");			
 			//String url = "jdbc:mysql://localhost?useUnicode=true&characterEncoding=SJIS";
 			String	url = "jdbc:mysql://localhost:3306/db_reservation?useUnicode=true&characterEncoding=SJIS";
 			sqlCon	= DriverManager.getConnection( url, sqlUserID, sqlPassword);
@@ -396,25 +395,11 @@ public class ReservationControl {
 
 	class Reservation {
 		// 予約情報を保持するクラス
-		private int facility_id;
+		public int facility_id;
 		private String date;
 		private String day;
 		private String start_time;
 		private String end_time;
-		// private Date date;
-		// private Date day;
-		// private Date start_time;
-		// private Date end_time;
-
-		// 日付のフォーマットを定義
-
-		// //インターフェースに表示する日付のフォーマット
-		// private static final SimpleDateFormat OUTPUT_DATE_FORMAT = new SimpleDateFormat("yyyy年MM月dd日");
-		// private static final SimpleDateFormat OUTPUT_TIME_FORMAT = new SimpleDateFormat("HH時mm分");
-
-		// // データベースから取得する日付のフォーマット
-		// private static final SimpleDateFormat INPUT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-		// private static final SimpleDateFormat INPUT_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
 		// // コンストラクタを追加
 		public Reservation(int facility_id, String date, String day, String start_time, String end_time) {
@@ -424,11 +409,6 @@ public class ReservationControl {
 			this.start_time = start_time;
 			this.end_time = end_time;
 		}
-		// 	this.date = INPUT_DATE_FORMAT.parse(date);
-		// 	this.day = INPUT_DATE_FORMAT.parse(day);
-		// 	this.start_time = INPUT_TIME_FORMAT.parse(start_time);
-		// 	this.end_time = INPUT_TIME_FORMAT.parse(end_time);
-		// }
 
 		// Getメソッドを追加
 		public int getFormatteFacilityId() {
@@ -436,19 +416,19 @@ public class ReservationControl {
 		}
 	
 		public String getFormattedDate() {
-			return date.format(date);
+			return date;
 		}
 	
 		public String getFormattedDay() {
-			return day.format(day);
+			return day;
 		}
 	
 		public String getFormattedStartTime() {
-			return start_time.format(start_time);
+			return start_time;
 		}
 	
 		public String getFormattedEndTime() {
-			return end_time.format(end_time);
+			return end_time;
 		}
 	
 		@Override
@@ -526,31 +506,23 @@ public class ReservationControl {
 		}
 		private void deleteReservation(int facility_id, String date, String day, String start_time, String end_time) {
 			try {
-				// デバッグ用ログ出力
-				System.out.println("Deleting reservation:");
-				System.out.println("facility_id: " + facility_id);
-				System.out.println("date: " + date);
-				System.out.println("day: " + day);
-				System.out.println("start_time: " + start_time);
-				System.out.println("end_time: " + end_time);
-				
 				connectDB();
 				String sql = "DELETE FROM reservation WHERE facility_id = '" + facility_id + "' AND date = '" + date + "' AND day = '" + day + "' AND start_time = '" + start_time + "' AND end_time = '" + end_time + "';";
-				int rowsAffected = rc.sqlStmt.executeUpdate(sql);
+				// int rowsAffected = rc.sqlStmt.executeUpdate(sql);
 				System.out.println( sql);
 
-				// 自動コミットが無効の場合は明示的にコミット
-				if (!rc.sqlCon.getAutoCommit()) {
-					rc.sqlCon.commit();
-					System.out.println("Transaction committed.");
-				}
+				// // 自動コミットが無効の場合は明示的にコミット
+				// if (!rc.sqlCon.getAutoCommit()) {
+				// 	rc.sqlCon.commit();
+				// 	System.out.println("Transaction committed.");
+				// }
 				
-				// デバッグ用ログ出力
-				if (rowsAffected == 0) {
-					System.out.println("No rows deleted.");
-				} else {
-					System.out.println("Reservation deleted successfully.");
-				}
+				// // デバッグ用ログ出力
+				// if (rowsAffected == 0) {
+				// 	System.out.println("No rows deleted.");
+				// } else {
+				// 	System.out.println("Reservation deleted successfully.");
+				// }
 
 			} catch (Exception e) {
 				e.printStackTrace();
