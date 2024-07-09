@@ -43,7 +43,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 	Label noReservationsLabel; // データがない場合のメッセージ表示用
 	ReservationActionHandler actionHandler;
 
-    public ReservationInformation( Frame owner, ReservationControl rc, String reservationUserID
+    public ReservationInformation( Frame owner ,ReservationControl rc, String reservationUserID
 	, List<ReservationControl.Reservation> reservations){
         super( owner, "予約状況", true);
         this.rc = rc;
@@ -66,7 +66,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 		if (reservations.isEmpty()) {
             noReservationsLabel = new Label("予約情報がありません");
             panelCenter.add(noReservationsLabel, BorderLayout.CENTER);
-        } else {
+		} else {
             // JTable用のモデルを作成
             String[] columnNames = {"選択", "教室", "予約日", "日程", "開始時間", "終了時間"};
             DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
@@ -142,6 +142,10 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
     }
 
 	private void updateButtonState() {
+		if (tableReservations == null) { //updateButtonState メソッドで tableReservations が null かどうかを確認
+			buttonReservationCansel.setEnabled(false);
+			return;
+		}
 		boolean isSelected = false;
 		for (int i = 0; i < tableReservations.getRowCount(); i++) {
 			if ((Boolean) tableReservations.getValueAt(i, 0)) {

@@ -19,8 +19,8 @@ public class ReservationControl {
 	// MySQLに接続するためのデータ
 	Connection	sqlCon;
 	Statement	sqlStmt;
-	String		sqlUserID	= "puser";							
-	String		sqlPassword	= "1234";
+	String		sqlUserID	= "root";							
+	String		sqlPassword	= "Pigson@3987";
 	// パスワード
 	// 予約システムのユーザID及びLogin状態
 	String		reservationUserID;
@@ -36,8 +36,8 @@ public class ReservationControl {
 	private	void	connectDB() {
 		try {
 			// MySQLに接続
-			Class.forName( "org.gjt.mm.mysql.Driver");						// MySQLのドライバをLoadする
-			//Class.forName( "com.mysql.cj.jdbc.Driver");			
+			// Class.forName( "org.gjt.mm.mysql.Driver");						// MySQLのドライバをLoadする
+			Class.forName( "com.mysql.cj.jdbc.Driver");			
 			//String url = "jdbc:mysql://localhost?useUnicode=true&characterEncoding=SJIS";
 			String	url = "jdbc:mysql://localhost:3306/db_reservation?useUnicode=true&characterEncoding=SJIS";
 			sqlCon	= DriverManager.getConnection( url, sqlUserID, sqlPassword);
@@ -195,11 +195,11 @@ public class ReservationControl {
 					res += "開始時間: " + start.substring(0, 5) + " ～ 終了時間: " + end.substring(0, 5) + "\n";
 				} while (rs.next());
 			} else {
-				res += " 予約情報がありません。";
+				res += "\n予約情報がありません。";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			res += " エラーが発生しました。予約情報の取得に失敗しました。";
+			res += "\nエラーが発生しました。予約情報の取得に失敗しました。";
 		} finally {
 			closeDB();  // データベース接続を閉じる
 		}
@@ -508,21 +508,8 @@ public class ReservationControl {
 			try {
 				connectDB();
 				String sql = "DELETE FROM reservation WHERE facility_id = '" + facility_id + "' AND date = '" + date + "' AND day = '" + day + "' AND start_time = '" + start_time + "' AND end_time = '" + end_time + "';";
-				// int rowsAffected = rc.sqlStmt.executeUpdate(sql);
+				rc.sqlStmt.executeUpdate(sql);
 				System.out.println( sql);
-
-				// // 自動コミットが無効の場合は明示的にコミット
-				// if (!rc.sqlCon.getAutoCommit()) {
-				// 	rc.sqlCon.commit();
-				// 	System.out.println("Transaction committed.");
-				// }
-				
-				// // デバッグ用ログ出力
-				// if (rowsAffected == 0) {
-				// 	System.out.println("No rows deleted.");
-				// } else {
-				// 	System.out.println("Reservation deleted successfully.");
-				// }
 
 			} catch (Exception e) {
 				e.printStackTrace();
