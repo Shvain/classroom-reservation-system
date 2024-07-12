@@ -177,7 +177,7 @@ public class ReservationControl {
 		dateReservation.set( Integer.parseInt( ryear_str), Integer.parseInt( rmonth_str)-1, Integer.parseInt( rday_str));	//@2
 		Calendar	dateNow = Calendar.getInstance();
 		if (!dateReservation.after(dateNow)) {
-			res = "予約日が無効です";
+			res = "無効の日付です";
 			return res;
 		}
 		// 予約状況の取得
@@ -192,7 +192,7 @@ public class ReservationControl {
 				do {
 					String start = rs.getString("start_time");
 					String end = rs.getString("end_time");
-					res += "開始時間: " + start.substring(0, 5) + " ～ 終了時間: " + end.substring(0, 5) + "\n";
+					res += "予約時間: " + start.substring(0, 5) + " ～ " + end.substring(0, 5) + "\n";
 				} while (rs.next());
 			} else {
 				res += "\n予約情報がありません。";
