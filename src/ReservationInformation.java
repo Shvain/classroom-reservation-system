@@ -88,11 +88,11 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
             for (ReservationControl.Reservation reservation : reservations) {
                 Object[] row = {
 					Boolean.FALSE,
-                    reservation.getFormatteFacilityId(),
-                    reservation.getFormattedDate(),
-                    reservation.getFormattedDay(),
-                    reservation.getFormattedStartTime(),
-                    reservation.getFormattedEndTime()
+                    reservation.facility_id,
+                    reservation.date,
+                    reservation.day,
+                    reservation.start_time,
+                    reservation.end_time
                 };
                 model.addRow(row);
             }

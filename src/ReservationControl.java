@@ -396,10 +396,10 @@ public class ReservationControl {
 	class Reservation {
 		// 予約情報を保持するクラス
 		public int facility_id;
-		private String date;
-		private String day;
-		private String start_time;
-		private String end_time;
+		public String date;
+		public String day;
+		public String start_time;
+		public String end_time;
 
 		// // コンストラクタを追加
 		public Reservation(int facility_id, String date, String day, String start_time, String end_time) {
@@ -409,36 +409,15 @@ public class ReservationControl {
 			this.start_time = start_time;
 			this.end_time = end_time;
 		}
-
-		// Getメソッドを追加
-		public int getFormatteFacilityId() {
-			return facility_id;
-		}
-	
-		public String getFormattedDate() {
-			return date;
-		}
-	
-		public String getFormattedDay() {
-			return day;
-		}
-	
-		public String getFormattedStartTime() {
-			return start_time;
-		}
-	
-		public String getFormattedEndTime() {
-			return end_time;
-		}
 	
 		@Override
 		public String toString() {
 			return "Reservation{" +
-					"facilityId=" + getFormatteFacilityId() +
-					", date='" + getFormattedDate() + '\'' +  //シングルクォートでエスケープ
-					", day='" + getFormattedDay() + '\'' +
-					", startTime='" + getFormattedStartTime() + '\'' +
-					", endTime='" + getFormattedEndTime() + '\'' +
+					"facilityId=" + facility_id + 
+					", date='" + date + '\'' +  //シングルクォートでエスケープ
+					", day='" + day + '\'' +
+					", startTime='" + start_time + '\'' +
+					", endTime='" + end_time + '\'' +
 					'}';
 		}
 	}
