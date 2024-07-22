@@ -12,6 +12,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -31,11 +36,9 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 
     Panel panelNorth;
 	Panel panelCenter;
-    Panel panelCenterSub1;
-	Panel panelCenterSub2;
     Panel panelSouth;
 
-    Button buttonReservationCansel;
+    Button buttonReservationCancel;
 
     TextField	tfLoginID;	
     TextField   tfFacility;
@@ -44,11 +47,11 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 	ReservationActionHandler actionHandler;
 
     public ReservationInformation( Frame owner ,ReservationControl rc, String reservationUserID
-	, List<ReservationControl.Reservation> reservations){
+	, List<ReservationControl> reservations){
         super( owner, "予約状況", true);
         this.rc = rc;
 
-        buttonReservationCansel = new Button( "該当の予約をキャンセル");
+        buttonReservationCancel = new Button( "該当の予約をキャンセル");
 
         panelNorth = new Panel();
         panelCenter = new Panel();
@@ -67,6 +70,13 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
             noReservationsLabel = new Label("予約情報がありません");
             panelCenter.add(noReservationsLabel, BorderLayout.CENTER);
 		} else {
+			// 予約情報を日付順に並び替え
+			Collections.sort(reservations, new Comparator<ReservationControl>() {
+				@Override
+				public int compare(ReservationControl r1, ReservationControl r2) {
+					return r1.day.compareTo(r2.day);
+				}
+			});
             // JTable用のモデルを作成
             String[] columnNames = {"選択", "教室", "予約日", "日程", "開始時間", "終了時間"};
             DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
@@ -79,24 +89,52 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 							return String.class;
 					}
 				}
-				@Override
-				public boolean isCellEditable(int row, int column) {
-					return column == 0;
-				}
-			};
-            // 予約情報をモデルに追加
-            for (ReservationControl.Reservation reservation : reservations) {
-                Object[] row = {
-					Boolean.FALSE,
-                    reservation.facility_id,
-                    reservation.date,
-                    reservation.day,
-                    reservation.start_time,
-                    reservation.end_time
-                };
-                model.addRow(row);
-            }
+				                @Override
+                public boolean isCellEditable(int row, int column) {
+                    if (column == 0) {
+                        Calendar dateReservation = Calendar.getInstance();
+                        String dateStr = (String) getValueAt(row, 3); // 予約日を取得
+                        try {
+                            dateReservation.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(dateStr));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                            return false;
+                        }
 
+                        Calendar dateNow = Calendar.getInstance();
+                        return !dateReservation.before(dateNow); // 本日より前の日付は編集不可
+                    }
+                    return false;
+                }
+            };
+
+			// 予約情報をモデルに追加
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			for (ReservationControl reservation : reservations) {
+				Calendar dateReservation = Calendar.getInstance();
+				try {
+					dateReservation.setTime(sdf.parse(reservation.day));
+				} catch (ParseException e) {
+					e.printStackTrace();
+					continue; // パースに失敗した場合は次の予約情報に進む
+				}
+
+				Calendar dateNow = Calendar.getInstance();
+				if (!dateReservation.before(dateNow) || (dateReservation.get(Calendar.YEAR) == dateNow.get(Calendar.YEAR) 
+					&& dateReservation.get(Calendar.DAY_OF_YEAR) == dateNow.get(Calendar.DAY_OF_YEAR))) { // 当日も表示
+					Object[] row = {
+						Boolean.FALSE,
+						reservation.facility_id,
+						reservation.date,
+						reservation.day,
+						reservation.start_time,
+						reservation.end_time
+					};
+					model.addRow(row);
+				} else {
+					System.out.println("エラー: " + reservation); // デバッグ出力
+				}
+			}
             // JTableを作成し、モデルを設定
             tableReservations = new JTable(model);
 
@@ -128,7 +166,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 			actionHandler = rc. new ReservationActionHandler(rc, model);
         }
 
-        panelSouth.add( buttonReservationCansel);
+        panelSouth.add( buttonReservationCancel);
 
         setLayout( new BorderLayout());
 		add( panelNorth,	BorderLayout.NORTH);
@@ -137,13 +175,13 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
         
         addWindowListener( this);
 
-        buttonReservationCansel.addActionListener( this);
+        buttonReservationCancel.addActionListener( this);
 		updateButtonState();
     }
 
 	private void updateButtonState() {
 		if (tableReservations == null) { //updateButtonState メソッドで tableReservations が null かどうかを確認
-			buttonReservationCansel.setEnabled(false);
+			buttonReservationCancel.setEnabled(false);
 			return;
 		}
 		boolean isSelected = false;
@@ -153,7 +191,7 @@ public class ReservationInformation extends Dialog implements ActionListener, Wi
 				break;
 			}
 		}
-		buttonReservationCansel.setEnabled(isSelected);
+		buttonReservationCancel.setEnabled(isSelected);
 	}
 
 	@Override

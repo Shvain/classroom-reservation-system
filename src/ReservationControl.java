@@ -26,10 +26,41 @@ public class ReservationControl {
 	String		reservationUserID;
 	private	boolean	flagLogin;											// ログイン状態(ログイン済:true)
 	private MainFrame mainFrame;
-	
+
+	// 予約情報を保持するクラス
+	public int facility_id;
+	public String date;
+	public String day;
+	public String start_time;
+	public String end_time;
+
+	// // コンストラクタを追加
+	public ReservationControl(int facility_id, String date, String day, String start_time, String end_time) {
+		this.facility_id = facility_id;
+		this.date = date;
+		this.day = day;
+		this.start_time = start_time;
+		this.end_time = end_time;
+	}
+
 	// ReservationControlクラスのコンストラクタ
 	ReservationControl(){
 		flagLogin = false;
+	}
+
+	public ReservationControl(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+    }
+
+	@Override
+	public String toString() {
+		return "Reservation{" +
+				"facilityId=" + facility_id + 
+				", date='" + date + '\'' +  //シングルクォートでエスケープ
+				", day='" + day + '\'' +
+				", startTime='" + start_time + '\'' +
+				", endTime='" + end_time + '\'' +
+				'}';
 	}
 	
 	// MySQLに接続するためのメソッド
@@ -56,10 +87,6 @@ public class ReservationControl {
 			e.printStackTrace();										// StackTraceを表示
 		}
 	}
-
-	public ReservationControl(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
-    }
 	
 	//// ログイン・ログアウトボタンの処理
 	public	String	loginLogout( MainFrame frame) {
@@ -170,16 +197,7 @@ public class ReservationControl {
 			res = "日付の値を修正して下さい";									// @2 数字以外，入力されていないことを想定したエラー処理
 			return	res;														// @2
 		}																		// @2
-																				// @2
-		// @2 入力された開始日が現時点より後であるかのチェック
-		Calendar	dateReservation = Calendar.getInstance();					// @2 
-		// @2 入力された予約日付及び現在の日付をCalendarクラスの情報として持つ
-		dateReservation.set( Integer.parseInt( ryear_str), Integer.parseInt( rmonth_str)-1, Integer.parseInt( rday_str));	//@2
-		Calendar	dateNow = Calendar.getInstance();
-		if (!dateReservation.after(dateNow)) {
-			res = "無効の日付です";
-			return res;
-		}
+
 		// 予約状況の取得
 		try {
 			String rdate = ryear_str + "-" + rmonth_str + "-" + rday_str;  // 予約日付
@@ -393,41 +411,11 @@ public class ReservationControl {
 		return	abailableTime;														// @2 open_time,close_timeの「時」を返す（エラーなら{0,0}が返る
 	}
 
-	class Reservation {
-		// 予約情報を保持するクラス
-		public int facility_id;
-		public String date;
-		public String day;
-		public String start_time;
-		public String end_time;
-
-		// // コンストラクタを追加
-		public Reservation(int facility_id, String date, String day, String start_time, String end_time) {
-			this.facility_id = facility_id;
-			this.date = date;
-			this.day = day;
-			this.start_time = start_time;
-			this.end_time = end_time;
-		}
-	
-		@Override
-		public String toString() {
-			return "Reservation{" +
-					"facilityId=" + facility_id + 
-					", date='" + date + '\'' +  //シングルクォートでエスケープ
-					", day='" + day + '\'' +
-					", startTime='" + start_time + '\'' +
-					", endTime='" + end_time + '\'' +
-					'}';
-		}
-	}
-
-
-	public String ReservationInformation( MainFrame frame) {
+	public String makeReservationInformation( MainFrame frame) {
 		String res = "";	// 結果を入れる戻り値変数を初期化（Nullを結果）
 		
 		if( flagLogin) {
-			List<Reservation> reservations = new ArrayList<>();
+			List<ReservationControl> reservations = new ArrayList<>();
 			try{
 				connectDB();
 				String sql = "SELECT facility_id, date, day, start_time, end_time FROM reservation WHERE user_id = '" + reservationUserID + "';";
@@ -440,7 +428,7 @@ public class ReservationControl {
 					String day = rdata.getString("day");
 					String start_time = rdata.getString("start_time");
 					String end_time = rdata.getString("end_time");
-					reservations.add(new Reservation(facility_id, date, day, start_time, end_time));
+					reservations.add(new ReservationControl(facility_id, date, day, start_time, end_time));
 				}
 
 			} catch( Exception e) {

@@ -37,8 +37,7 @@ public class MainFrame extends Frame implements ActionListener, WindowListener{
 	
 	//// MainFrameコンストラクタ
 	public	MainFrame( ReservationControl rc) {
-		reservationControl = new ReservationControl(this);							// ReservationControlインスタンス保存
-
+		reservationControl = new ReservationControl(this);							// ReservationControlインスタンス保存									// ReservationControlインスタンス保存
 		// ボタンの生成
 		buttonLog = new Button( " ログイン ");					// ログインボタン
 		buttonExplanation = new Button( "教室概要");			// @1 教室選択ボタン
@@ -172,17 +171,13 @@ public class MainFrame extends Frame implements ActionListener, WindowListener{
 		// @1 押下ボタンが教室概要ボタンの時，getFacilityExplanationメソッドを実行
 		} else if (e.getSource() == buttonExplanation) {
 			String facilityId = choiceFacility.getSelectedItem();
-			if (tfYear.getText().isEmpty() || tfMonth.getText().isEmpty() || tfDay.getText().isEmpty()) {
-				result = reservationControl.getFacilityExplanation(facilityId);  // 年月日が入力されていない場合
-			} else {
-				result = reservationControl.getFacilityExplanation(facilityId);  // 年月日が入力されている場合
-			}
+			result = reservationControl.getFacilityExplanation(facilityId);  // 年月日が入力されている場合
 		// @2 押下ボタンが新規予約ボタンの時，makeReservationメソッドを実行
 		} else if( e.getSource() == buttonReservation) {		// @2
 			result = reservationControl.makeReservation( this);	// @2
 		// @2 押下ボタンが予約確認ボタンの時，ReservationInformationメソッドを実行
 		} else if( e.getSource() == buttonReservationInformation) {		// @2
-			result = reservationControl.ReservationInformation( this);	// @2
+			result = reservationControl.makeReservationInformation( this);	// @2
 		}
 		textMessage.setText( result);							// メソッドの戻り値をテキストエリアに表示
 	}
